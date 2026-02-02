@@ -1,65 +1,68 @@
 package com.example.flashcardproject.Presentation.Flashcard
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.flashcardproject.Data.Flashcard.FlashcardRepository
 import com.example.flashcardproject.Presentation.Folder.FolderUi
-import com.example.flashcardproject.UiState
+import com.example.flashcardproject.FlashCardsAppUiState
+import com.example.flashcardproject.Mappers.Flashcard.toEntity
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class FlashcardViewModel(): ViewModel()  {
-    private val _uiState = MutableStateFlow(UiState(emptyList()))
-    var uiState : StateFlow<UiState> = _uiState.asStateFlow()
+class FlashcardViewModel(private val flashcardRepository: FlashcardRepository): ViewModel()  {
 
+    private val _FlashCardsApp_uiState = MutableStateFlow(FlashCardsAppUiState(emptyList()))
+    var flashCardsAppUiState : StateFlow<FlashCardsAppUiState> =
+        flashcardRepository.flashcards
+            .map{ flashcards ->
+                FlashCardsAppUiState(flashcards = flashcards)
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = FlashCardsAppUiState()
+            )
 
-    fun createFlashcard (flashcard : FlashcardUi){
-        val currentState = _uiState.value
-        val currentList : List<FlashcardUi> = currentState.flashcards
-        val newList: List<FlashcardUi> = currentList + flashcard
-        _uiState.value = currentState.copy(flashcards = newList)
+    fun insertFlashcard (flashcard : FlashcardUi){
+        viewModelScope.launch { flashcardRepository.insertFlashcard(flashcard.toEntity()) }
     }
+
 
     fun deleteFlashcard  (flashcard: FlashcardUi){
-        val currentState = _uiState.value
-        val currentList : List<FlashcardUi> = currentState.flashcards
-        val newList: List<FlashcardUi> = currentList - flashcard
-        _uiState.value = currentState.copy(flashcards = newList)
+        viewModelScope.launch {
+            flashcardRepository.deleteFlashcard(flashcard.toEntity())
+        }
     }
 
-    fun updateWord1(flashcard: FlashcardUi, newWord: String){
-        val state = _uiState.value
-        val newList = state.flashcards.map {
-            if (it.id == flashcard.id) it.copy(word1 = newWord)
-            else it
+    fun updateWord1(id: Long, newWord: String){
+        viewModelScope.launch {
+            flashcardRepository.updateWord1(id,newWord)
         }
-        _uiState.value = state.copy(flashcards = newList)
     }
 
-    fun updateWord2(flashcard: FlashcardUi, newWord: String) {
-        val state = _uiState.value
-        val newList = state.flashcards.map {
-            if (it.id == flashcard.id) it.copy(word2 = newWord)
-            else it
+    fun updateWord2(id: Long, newWord: String) {
+        viewModelScope.launch {
+            flashcardRepository.updateWord2(id,newWord)
         }
-        _uiState.value = state.copy(flashcards = newList)
     }
 
-    fun turnFlashcard(flashcard: FlashcardUi) {
-        val current = _uiState.value
-        val newList = current.flashcards.map {
-            if (it == flashcard) it.copy(isUp = !it.isUp)
-            else it
+    fun turnFlashcard(isUp: Boolean, id: Long) {
+        viewModelScope.launch {
+            flashcardRepository.turnFlashcard(isUp, id)
         }
-        _uiState.value = current.copy(flashcards = newList)
+
     }
 
-    fun moveCardToFolder(flashcard: FlashcardUi, folder: FolderUi){
-        val state = _uiState.value
-        val uptFlashcards = state.flashcards.map {
-            if(it.id == flashcard.id) flashcard.copy(folderId = folder.id)
-            else it
+    fun moveCardToFolder(id: Long, folder: Long){
+        viewModelScope.launch {
+            flashcardRepository.moveFlashcardToFolder(id, folder)
         }
-        _uiState.value = state.copy(flashcards = uptFlashcards )
     }
+
 
 }

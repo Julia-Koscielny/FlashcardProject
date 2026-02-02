@@ -4,7 +4,7 @@ import com.example.flashcardproject.Presentation.Flashcard.FlashcardUi
 import com.example.flashcardproject.Presentation.Folder.FolderUi
 
 
-data class UiState(
+data class FlashCardsAppUiState(
     val flashcards: List<FlashcardUi> = emptyList(),
     val folders: List<FolderUi> = emptyList(),
     val selectedFolderId: Long? = null) {
