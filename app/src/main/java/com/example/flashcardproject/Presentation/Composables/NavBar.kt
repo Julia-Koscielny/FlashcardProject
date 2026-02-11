@@ -46,7 +46,8 @@ fun NavBarContent(modifier: Modifier = Modifier) {
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Purple40),
+                .background(Purple40)
+                .height(120.dp),
             contentPadding = PaddingValues(horizontal = 140.dp)
         )
         { page ->
