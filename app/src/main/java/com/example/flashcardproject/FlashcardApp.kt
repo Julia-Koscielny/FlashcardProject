@@ -7,12 +7,28 @@ import androidx.room.Room
 import com.example.flashcardproject.Data.AppDatabase
 import com.example.flashcardproject.Data.Flashcard.OfflineFlashcardsRepository
 
+/*
 class FlashcardApp: Application() {
     val database by lazy {
         Room.databaseBuilder(
             this,
             AppDatabase::class.java,
             "app_database"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
+
+    }
+}*/
+
+class FlashcardApp: Application(){
+
+    val database: AppDatabase by lazy {
+        Room.databaseBuilder(
+            this,
+            AppDatabase::class.java,
+            "app_database"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 }

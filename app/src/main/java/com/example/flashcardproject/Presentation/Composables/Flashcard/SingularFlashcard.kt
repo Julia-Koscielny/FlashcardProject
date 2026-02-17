@@ -1,4 +1,4 @@
-package com.example.flashcardproject.Presentation.Composables
+package com.example.flashcardproject.Presentation.Composables.Flashcard
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

@@ -1,7 +1,9 @@
-package com.example.flashcardproject.Presentation.Composables
+package com.example.flashcardproject.Presentation.Composables.Flashcard
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,14 +16,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.flashcardproject.Presentation.Flashcard.FlashcardUi
 import com.example.flashcardproject.Presentation.Flashcard.FlashcardViewModel
 
 @Composable
-fun CreateFlashcardScreen(viewModel: FlashcardViewModel){
+fun CreateFlashcardScreen(
+    viewModel: FlashcardViewModel,
+    onCreateClick: () -> Unit
+) {
     CreateFlashcardContent (
-        onCreateFlashcard = { word1, word2 ->
+
+        onCreateClick = onCreateClick
+
+       /* onCreateFlashcard = { word1, word2 ->
             viewModel.insertFlashcard(
                 FlashcardUi(
                     id = 0,
@@ -31,13 +40,14 @@ fun CreateFlashcardScreen(viewModel: FlashcardViewModel){
                     isUp = true
                 )
             )
-        }
+        }*/
     )
 }
 
 @Composable
 fun CreateFlashcardContent(
-    onCreateFlashcard: (String, String) -> Unit
+    /*onCreateFlashcard: (String, String) -> Unit*/
+    onCreateClick:() -> Unit
 ){
     var word1 by remember { mutableStateOf("") }
     var word2 by remember { mutableStateOf("") }
@@ -62,18 +72,27 @@ fun CreateFlashcardContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {
+            /*onClick = {
                 if(word1.isNotBlank() && word2.isNotBlank()){
                     onCreateFlashcard(word1, word2)
                     word1 = ""
                     word2 = ""
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
+            },*/
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onCreateClick
         ) {
             Text("Create Flashcard")
         }
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CreateFlashcardContentPreview(){
+    Box(modifier = Modifier.fillMaxSize()){
+        CreateFlashcardContent ( onCreateClick = { })
     }
 }
 
