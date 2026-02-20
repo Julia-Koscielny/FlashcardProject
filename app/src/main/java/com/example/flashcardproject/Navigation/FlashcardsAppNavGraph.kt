@@ -1,6 +1,8 @@
 package com.example.flashcardproject.Navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,7 +22,7 @@ import com.example.flashcardproject.Presentation.Flashcard.FlashcardViewModelFac
 import com.example.flashcardproject.Presentation.Folder.FolderViewModel
 import com.example.flashcardproject.Presentation.Folder.FolderViewModelFactory
 import androidx.navigation.compose.NavHost
-
+import com.example.flashcardproject.Presentation.Composables.Flashcard.FlashcardPlayScreen
 
 
 @Composable
@@ -32,7 +34,7 @@ fun FlashcardsAppNavGraph(
     val navController = rememberNavController()
 
     val folderViewModelFactory = remember {
-        FolderViewModelFactory(folderRepository)
+        FolderViewModelFactory(folderRepository, flashcardRepository)
     }
 
     val folderViewModel: FolderViewModel = viewModel(
@@ -46,6 +48,7 @@ fun FlashcardsAppNavGraph(
     val flashcardViewModel: FlashcardViewModel = viewModel(
         factory = flashcardViewModelFactory
     )
+
 
     NavHost(
         navController = navController,
@@ -62,8 +65,8 @@ fun FlashcardsAppNavGraph(
                     navController.navigate("deleteFolder/$folderId")
                 },
 
-                onEnterFolderClick = {
-                    navController.navigate("enterFolder")
+                onEnterFolderClick = { folderId ->
+                    navController.navigate("enterFolder/$folderId")
                 }
             )
         }
@@ -77,21 +80,43 @@ fun FlashcardsAppNavGraph(
             )
         }
 
-        composable("flashcardCreate") {
+        composable(
+            "flashcardCreate/{folderId}",
+            arguments = listOf(
+                navArgument("folderId"){
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val folderId =
+                backStackEntry.arguments?.getLong("folderId")
+                    ?:error("Folder missing")
+
             CreateFlashcardScreen(
                 viewModel = flashcardViewModel,
-                onCreateClick = {navController.popBackStack()}
+                onCreateClick = {navController.popBackStack()},
+                folderId = folderId
+
             )
         }
 
-        composable(
-            "enterFolder"
-        ) {
+        composable("enterFolder/{folderId}",
+            arguments = listOf(
+                navArgument("folderId"){
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val folderId =
+                backStackEntry.arguments?.getLong("folderId")
+                    ?: error("folderId missing")
+
             FolderInsideScreen(
+                folderId = folderId,
                 viewModel = folderViewModel,
-                onPlayClick = {},
+                onPlayClick = {navController.navigate("flashcardPlay/$folderId")},
                 onFlashcardClick = {},
-                onCreateClick = {navController.navigate("flashcardCreate")}
+                onCreateClick = {navController.navigate("flashcardCreate/$folderId")}
             )
         }
 
@@ -116,6 +141,23 @@ fun FlashcardsAppNavGraph(
                 onCancel = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable(
+            "flashcardPlay/{folderId}",
+            arguments = listOf(navArgument("folderId") { type = NavType.LongType })
+        ) { backStackEntry ->
+
+            val folderId = backStackEntry.arguments?.getLong("folderId") ?: error("FolderId missing")
+
+            val flashcards by flashcardViewModel.getFolderFlashcards(folderId).collectAsState(initial = emptyList())
+
+            FlashcardPlayScreen(
+                flashcards = flashcards,
+                viewModel = flashcardViewModel,
+                onFinished = {navController.navigate("enterFolder/$folderId")},
+                onCancel = {navController.navigate("enterFolder/$folderId")}
             )
         }
     }

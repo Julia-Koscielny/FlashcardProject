@@ -9,7 +9,7 @@ interface FlashcardRepository {
 
     suspend fun moveFlashcardToFolder(id: Long, folderId: Long): Int
 
-    fun getFolderFlashcard(folderId: Long): Flow<List<FlashcardEnt>>
+    fun getFolderFlashcard(folderId: Long): Flow<List<FlashcardUi>>
     suspend fun insertFlashcard(flashcardEnt: FlashcardEnt)
 
     suspend fun updateFlashcard(flashcardEnt: FlashcardEnt)

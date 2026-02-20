@@ -2,6 +2,7 @@ package com.example.flashcardproject.Presentation.Composables.Folder
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,7 @@ fun FoldersInterfaceScreen(
     viewModel: FolderViewModel,
     onAddFolderClick: () -> Unit,
     onDeleteFolderClick: (Long) -> Unit,
-    onEnterFolderClick: () -> Unit,
+    onEnterFolderClick: (Long) -> Unit,
 ) {
     val uiState by viewModel.flashCardsAppUiState.collectAsState()
 
@@ -55,7 +56,7 @@ private fun FoldersInterfaceContent(
     folderList: List<FolderUi>,
     onAddFolderClick: () -> Unit,
     onDeleteFolderClick: (Long) -> Unit,
-    onEnterFolderClick: () -> Unit
+    onEnterFolderClick: (Long) -> Unit
 ){
 
     Column(modifier = Modifier
@@ -82,12 +83,17 @@ private fun FoldersInterfaceContent(
 }
 
 @Composable
-fun FolderMin(folder: FolderUi, onDeleteFolderClick: (Long) -> Unit, onEnterFolderClick: () -> Unit){
+fun FolderMin(
+    folder: FolderUi,
+    onDeleteFolderClick: (Long) -> Unit,
+    onEnterFolderClick: (Long) -> Unit){
 
-    Row( modifier = Modifier
-        .background(PurpleGrey80, RectangleShape)
-        .padding(horizontal = 16.dp, vertical = 8.dp)
-        .heightIn(max = 60.dp),
+    Row(
+        modifier = Modifier
+            .background(PurpleGrey80, RectangleShape)
+            .clickable { onEnterFolderClick(folder.id) }
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .heightIn(min = 60.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(painter = painterResource(R.drawable.folder), "",
@@ -100,11 +106,11 @@ fun FolderMin(folder: FolderUi, onDeleteFolderClick: (Long) -> Unit, onEnterFold
             .weight(1f)
             )
 
-        Button(modifier = Modifier
+      /*  Button(modifier = Modifier
             .heightIn(max=30.dp)
             .widthIn(max = 25.dp),
-            onClick = onEnterFolderClick
-        ) {}
+            onClick = {onEnterFolderClick(folder.id)}
+        ) {}*/
 
         Spacer(modifier = Modifier.width(6.dp))
 

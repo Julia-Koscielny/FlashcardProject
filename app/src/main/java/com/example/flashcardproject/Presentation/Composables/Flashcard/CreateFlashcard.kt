@@ -24,30 +24,28 @@ import com.example.flashcardproject.Presentation.Flashcard.FlashcardViewModel
 @Composable
 fun CreateFlashcardScreen(
     viewModel: FlashcardViewModel,
-    onCreateClick: () -> Unit
+    onCreateClick: () -> Unit,
+    folderId: Long
 ) {
     CreateFlashcardContent (
-
-        onCreateClick = onCreateClick
-
-       /* onCreateFlashcard = { word1, word2 ->
+        onCreateFlashcard = { word1, word2 ->
             viewModel.insertFlashcard(
                 FlashcardUi(
                     id = 0,
                     word1 = word1,
                     word2 = word2,
-                    folderId = 0,
+                    folderId = folderId,
                     isUp = true
                 )
             )
-        }*/
+            onCreateClick()
+        }
     )
 }
 
 @Composable
 fun CreateFlashcardContent(
-    /*onCreateFlashcard: (String, String) -> Unit*/
-    onCreateClick:() -> Unit
+    onCreateFlashcard: (String, String) -> Unit
 ){
     var word1 by remember { mutableStateOf("") }
     var word2 by remember { mutableStateOf("") }
@@ -72,15 +70,14 @@ fun CreateFlashcardContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            /*onClick = {
+            onClick = {
                 if(word1.isNotBlank() && word2.isNotBlank()){
                     onCreateFlashcard(word1, word2)
                     word1 = ""
                     word2 = ""
                 }
-            },*/
+            },
             modifier = Modifier.fillMaxWidth(),
-            onClick = onCreateClick
         ) {
             Text("Create Flashcard")
         }
@@ -92,7 +89,7 @@ fun CreateFlashcardContent(
 @Composable
 fun CreateFlashcardContentPreview(){
     Box(modifier = Modifier.fillMaxSize()){
-        CreateFlashcardContent ( onCreateClick = { })
+
     }
 }
 

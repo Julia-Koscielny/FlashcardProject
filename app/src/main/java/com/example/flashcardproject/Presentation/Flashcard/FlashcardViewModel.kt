@@ -55,7 +55,6 @@ class FlashcardViewModel(private val flashcardRepository: FlashcardRepository): 
         viewModelScope.launch {
             flashcardRepository.turnFlashcard(isUp, id)
         }
-
     }
 
     fun moveCardToFolder(id: Long, folder: Long){
@@ -64,5 +63,7 @@ class FlashcardViewModel(private val flashcardRepository: FlashcardRepository): 
         }
     }
 
+    fun getFolderFlashcards( folderId: Long) =
+        flashcardRepository.getFolderFlashcard(folderId)
 
 }

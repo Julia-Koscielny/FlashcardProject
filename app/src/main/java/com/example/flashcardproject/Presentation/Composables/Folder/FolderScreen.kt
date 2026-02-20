@@ -6,11 +6,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.flashcardproject.Presentation.Composables.Flashcard.SingularFlashcardScreen
 import com.example.flashcardproject.Presentation.Flashcard.FlashcardUi
+import com.example.flashcardproject.Presentation.Flashcard.FlashcardViewModel
 
 @Composable
 fun FolderScreen(
     flashcards: List<FlashcardUi>,
-    onFlip: () -> Unit
+    onFlip: () -> Unit,
+    viewModel: FlashcardViewModel
 ) {
     if (flashcards.isEmpty()) {
         Text("No flashcards")
@@ -20,7 +22,7 @@ fun FolderScreen(
                 items = flashcards,
                 key = { it.id }
             ) { flashcard ->
-                SingularFlashcardScreen(flashcard, onFlip)
+                SingularFlashcardScreen(flashcard,viewModel )
             }
         }
     }

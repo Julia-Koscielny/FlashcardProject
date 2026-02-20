@@ -2,6 +2,7 @@ package com.example.flashcardproject.Presentation.Folder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.flashcardproject.Data.Flashcard.FlashcardRepository
 import com.example.flashcardproject.Data.Folder.FolderRepository
 import com.example.flashcardproject.FlashCardsAppUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,8 +12,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.flashcardproject.Mappers.Folder.toEntity
-class FolderViewModel(private val folderRepository: FolderRepository): ViewModel() {
-    private val _FlashCardsApp_uiState = MutableStateFlow(FlashCardsAppUiState(emptyList()))
+import com.example.flashcardproject.Presentation.Flashcard.FlashcardUi
+import kotlinx.coroutines.flow.asStateFlow
+
+class FolderViewModel(
+    private val folderRepository: FolderRepository,
+    private val flashcardRepository: FlashcardRepository
+): ViewModel() {
     var flashCardsAppUiState : StateFlow<FlashCardsAppUiState> =
         folderRepository.folders
             .map { folders ->
@@ -24,6 +30,12 @@ class FolderViewModel(private val folderRepository: FolderRepository): ViewModel
                 initialValue = FlashCardsAppUiState()
             )
 
+    private val _folderFlashcards =
+        MutableStateFlow<List<FlashcardUi>>(emptyList())
+
+    val folderFlashcards: StateFlow<List<FlashcardUi>> =
+        _folderFlashcards.asStateFlow()
+
     fun addFolder(folder: FolderUi){
        viewModelScope.launch { folderRepository.insertFolder(folder.toEntity()) }
    }
@@ -31,4 +43,14 @@ class FolderViewModel(private val folderRepository: FolderRepository): ViewModel
    fun deleteFolder( id: Long ){
        viewModelScope.launch { folderRepository.deleteFolder(id) }
    }
+
+    fun loadFolderFlashcards(folderId: Long){
+        viewModelScope.launch {
+            flashcardRepository
+                .getFolderFlashcard(folderId)
+                .collect { flashcards ->
+                    _folderFlashcards.value = flashcards
+                }
+        }
+    }
 }

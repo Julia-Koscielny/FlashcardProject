@@ -15,7 +15,9 @@ class OfflineFlashcardsRepository(private val flashcardDAO: FlashcardDAO) : Flas
 
     override suspend fun moveFlashcardToFolder(id: Long, folderId: Long) = flashcardDAO.moveFlashcardToFolder(id,folderId)
 
-    override fun getFolderFlashcard(folderId: Long): Flow<List<FlashcardEnt>> = flashcardDAO.getFolderFlashcard(folderId)
+    override fun getFolderFlashcard(folderId: Long): Flow<List<FlashcardUi>> =
+        flashcardDAO.getFolderFlashcard(folderId)
+            .map { list -> list.map { it.toUI() } }
 
     override suspend fun insertFlashcard(flashcardEnt: FlashcardEnt) = flashcardDAO.insertFlashcard(flashcardEnt)
 

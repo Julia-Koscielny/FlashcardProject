@@ -23,7 +23,7 @@ import com.example.flashcardproject.Presentation.Folder.FolderUi
 @Composable
 fun CreateFolderScreen(
     viewModel: FolderViewModel,
-    onFolderCreated: () -> Unit
+    onFolderCreated: () -> Unit,
 ) {
     CreateFolderContent(
         onCreateFolder = { name ->
