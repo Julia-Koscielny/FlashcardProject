@@ -9,5 +9,5 @@ import com.example.flashcardproject.Presentation.Flashcard.FlashcardUi
             word1 = word1,
             word2 = word2,
             folderId = folderId,
-            isUp = true
+            isUp = isUp
         )

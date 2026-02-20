@@ -39,11 +39,5 @@ interface FlashcardDAO {
     fun getFlashcards(): Flow<List<FlashcardEnt>>
 
     @Query("UPDATE flashcards SET flashcard_state = :isUp WHERE flashcard_id =:id")
-    suspend fun turnFLashcard(isUp: Boolean, id: Long){
-        if (isUp ){
-            !isUp
-        }else{
-            isUp
-        }
-    }
+    suspend fun turnFLashcard(isUp: Boolean, id: Long)
 }

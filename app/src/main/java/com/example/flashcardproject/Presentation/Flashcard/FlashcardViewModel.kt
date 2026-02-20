@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 class FlashcardViewModel(private val flashcardRepository: FlashcardRepository): ViewModel()  {
 
     private val _FlashCardsApp_uiState = MutableStateFlow(FlashCardsAppUiState(emptyList()))
-    var flashCardsAppUiState : StateFlow<FlashCardsAppUiState> =
-        flashcardRepository.flashcards
+    var flashCardsAppUiState : StateFlow<FlashCardsAppUiState> = _FlashCardsApp_uiState
+        /*flashcardRepository.flashcards
             .map{ flashcards ->
                 FlashCardsAppUiState(flashcards = flashcards)
             }
@@ -26,7 +26,15 @@ class FlashcardViewModel(private val flashcardRepository: FlashcardRepository): 
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = FlashCardsAppUiState()
-            )
+            )*/
+
+    init {
+        viewModelScope.launch {
+            flashcardRepository.flashcards.collect { flashcards ->
+                _FlashCardsApp_uiState.value = FlashCardsAppUiState(flashcards)
+            }
+        }
+    }
 
     fun insertFlashcard (flashcard : FlashcardUi){
         viewModelScope.launch { flashcardRepository.insertFlashcard(flashcard.toEntity()) }
@@ -51,9 +59,12 @@ class FlashcardViewModel(private val flashcardRepository: FlashcardRepository): 
         }
     }
 
-    fun turnFlashcard(isUp: Boolean, id: Long) {
+    fun turnFlashcard(flashcard: FlashcardUi) {
         viewModelScope.launch {
-            flashcardRepository.turnFlashcard(isUp, id)
+            flashcardRepository.turnFlashcard(
+                isUp = !flashcard.isUp,
+                id = flashcard.id
+            )
         }
     }
 

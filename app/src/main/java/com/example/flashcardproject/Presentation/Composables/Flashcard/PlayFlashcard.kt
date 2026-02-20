@@ -25,7 +25,7 @@ fun FlashcardPlayScreen(
     flashcards: List<FlashcardUi>,
     viewModel: FlashcardViewModel,
     onFinished:()-> Unit,
-    onCancel: ()-> Unit
+    onCancel: ()-> Unit,
 ) {
     var currentIndex by remember { mutableStateOf(0) }
 
@@ -39,8 +39,8 @@ fun FlashcardPlayScreen(
 
     Column {
         SingularFlashcardScreen(
-            flashcard = currentFlashcard,
-            viewModel = viewModel
+            viewModel = viewModel,
+            flashcard = currentFlashcard
         )
 
         Spacer(modifier = Modifier.height(16.dp))

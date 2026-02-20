@@ -22,7 +22,7 @@ fun FolderScreen(
                 items = flashcards,
                 key = { it.id }
             ) { flashcard ->
-                SingularFlashcardScreen(flashcard,viewModel )
+                SingularFlashcardScreen(viewModel, flashcard )
             }
         }
     }
