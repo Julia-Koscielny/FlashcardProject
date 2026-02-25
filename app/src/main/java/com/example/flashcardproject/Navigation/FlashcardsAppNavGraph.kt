@@ -22,6 +22,7 @@ import com.example.flashcardproject.Presentation.Flashcard.FlashcardViewModelFac
 import com.example.flashcardproject.Presentation.Folder.FolderViewModel
 import com.example.flashcardproject.Presentation.Folder.FolderViewModelFactory
 import androidx.navigation.compose.NavHost
+import com.example.flashcardproject.Data.User.UserRepository
 import com.example.flashcardproject.Presentation.Composables.Flashcard.FlashcardPlayScreen
 
 
@@ -29,7 +30,8 @@ import com.example.flashcardproject.Presentation.Composables.Flashcard.Flashcard
 fun FlashcardsAppNavGraph(
     modifier: Modifier = Modifier,
     folderRepository: FolderRepository,
-    flashcardRepository: FlashcardRepository
+    flashcardRepository: FlashcardRepository,
+    userRepository: UserRepository
 ) {
     val navController = rememberNavController()
 
@@ -42,7 +44,7 @@ fun FlashcardsAppNavGraph(
     )
 
     val flashcardViewModelFactory = remember {
-        FlashcardViewModelFactory(flashcardRepository)
+        FlashcardViewModelFactory(flashcardRepository, folderRepository, userRepository)
     }
 
     val flashcardViewModel: FlashcardViewModel = viewModel(

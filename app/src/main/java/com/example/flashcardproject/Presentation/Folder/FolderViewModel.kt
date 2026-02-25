@@ -4,37 +4,47 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashcardproject.Data.Flashcard.FlashcardRepository
 import com.example.flashcardproject.Data.Folder.FolderRepository
-import com.example.flashcardproject.FlashCardsAppUiState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.flashcardproject.Mappers.Folder.toEntity
-import com.example.flashcardproject.Presentation.Flashcard.FlashcardUi
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class FolderViewModel(
     private val folderRepository: FolderRepository,
     private val flashcardRepository: FlashcardRepository
 ): ViewModel() {
-    var flashCardsAppUiState : StateFlow<FlashCardsAppUiState> =
-        folderRepository.folders
-            .map { folders ->
-                FlashCardsAppUiState(folders = folders)
+    private val _folder_UiState = MutableStateFlow(FolderStateUi())
+    val uiState: StateFlow<FolderStateUi> = _folder_UiState
+
+    init {
+        observeFolders()
+    }
+
+    private fun observeFolders(){
+        viewModelScope.launch {
+            folderRepository.folders.collect { folders ->
+                _folder_UiState.update { current ->
+                    current.copy(folders = folders)
+                }
             }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = FlashCardsAppUiState()
-            )
+        }
+    }
 
-    private val _folderFlashcards =
-        MutableStateFlow<List<FlashcardUi>>(emptyList())
-
-    val folderFlashcards: StateFlow<List<FlashcardUi>> =
-        _folderFlashcards.asStateFlow()
+    fun loadFolderFlashcards(folderId: Long){
+        viewModelScope.launch {
+            flashcardRepository
+                .getFolderFlashcard(folderId)
+                .collect { flashcards ->
+                    _folder_UiState.update { current ->
+                        current.copy(
+                            selectedFolderId = folderId,
+                            flashcards = flashcards
+                        )
+                    }
+                }
+        }
+    }
 
     fun addFolder(folder: FolderUi){
        viewModelScope.launch { folderRepository.insertFolder(folder.toEntity()) }
@@ -44,13 +54,4 @@ class FolderViewModel(
        viewModelScope.launch { folderRepository.deleteFolder(id) }
    }
 
-    fun loadFolderFlashcards(folderId: Long){
-        viewModelScope.launch {
-            flashcardRepository
-                .getFolderFlashcard(folderId)
-                .collect { flashcards ->
-                    _folderFlashcards.value = flashcards
-                }
-        }
-    }
 }

@@ -40,8 +40,8 @@ fun FolderInsideScreen(
     LaunchedEffect(folderId) {
         viewModel.loadFolderFlashcards(folderId)
     }
-    val flashcards by viewModel.folderFlashcards.collectAsState()
-
+    val uiState by viewModel.uiState.collectAsState()
+    val flashcards = uiState.flashcards
     Column(
         modifier = Modifier
             .fillMaxSize()

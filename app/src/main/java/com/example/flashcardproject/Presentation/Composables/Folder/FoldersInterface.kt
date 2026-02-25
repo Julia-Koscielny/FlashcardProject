@@ -40,7 +40,7 @@ fun FoldersInterfaceScreen(
     onDeleteFolderClick: (Long) -> Unit,
     onEnterFolderClick: (Long) -> Unit,
 ) {
-    val uiState by viewModel.flashCardsAppUiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     FoldersInterfaceContent(
             folderList = uiState.folders,

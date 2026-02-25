@@ -3,38 +3,31 @@ package com.example.flashcardproject.Presentation.Flashcard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashcardproject.Data.Flashcard.FlashcardRepository
-import com.example.flashcardproject.Presentation.Folder.FolderUi
-import com.example.flashcardproject.FlashCardsAppUiState
+import com.example.flashcardproject.Data.Folder.FolderRepository
+import com.example.flashcardproject.Data.User.UserRepository
+import com.example.flashcardproject.Presentation.Flashcard.FlashcardUiState
 import com.example.flashcardproject.Mappers.Flashcard.toEntity
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class FlashcardViewModel(private val flashcardRepository: FlashcardRepository): ViewModel()  {
+class FlashcardViewModel(
+    private val flashcardRepository: FlashcardRepository,
+    private val folderRepository: FolderRepository,
+    private val userRepository: UserRepository): ViewModel()  {
 
-    private val _FlashCardsApp_uiState = MutableStateFlow(FlashCardsAppUiState(emptyList()))
-    var flashCardsAppUiState : StateFlow<FlashCardsAppUiState> = _FlashCardsApp_uiState
-        /*flashcardRepository.flashcards
-            .map{ flashcards ->
-                FlashCardsAppUiState(flashcards = flashcards)
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = FlashCardsAppUiState()
-            )*/
+    private val _FlashCardsApp_uiState = MutableStateFlow(FlashcardUiState(emptyList()))
+    var flashcardUiState : StateFlow<FlashcardUiState> = _FlashCardsApp_uiState
+
 
     init {
         viewModelScope.launch {
             flashcardRepository.flashcards.collect { flashcards ->
-                _FlashCardsApp_uiState.value = FlashCardsAppUiState(flashcards)
+                _FlashCardsApp_uiState.value = FlashcardUiState(flashcards)
             }
         }
     }
+
 
     fun insertFlashcard (flashcard : FlashcardUi){
         viewModelScope.launch { flashcardRepository.insertFlashcard(flashcard.toEntity()) }
@@ -71,6 +64,13 @@ class FlashcardViewModel(private val flashcardRepository: FlashcardRepository): 
     fun moveCardToFolder(id: Long, folder: Long){
         viewModelScope.launch {
             flashcardRepository.moveFlashcardToFolder(id, folder)
+        }
+    }
+
+    fun onFolderCompleted (userId: Long){
+        viewModelScope.launch {
+            userRepository.updatePoints(userId,10)
+
         }
     }
 

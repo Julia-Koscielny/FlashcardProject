@@ -16,6 +16,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +41,8 @@ fun NavBarContent(modifier: Modifier = Modifier) {
         R.drawable.store,
     )
 
+
+/*
     val pagerState = rememberPagerState { iconList.size }
 
         HorizontalPager(
@@ -64,8 +67,7 @@ fun NavBarContent(modifier: Modifier = Modifier) {
                         .padding(20.dp)
                 )
             }
-
-    }
+    }*/
 }
 
     @Preview(showBackground = true)

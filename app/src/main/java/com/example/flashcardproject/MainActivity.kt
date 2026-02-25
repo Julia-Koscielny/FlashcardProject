@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.example.flashcardproject.Data.Flashcard.OfflineFlashcardsRepository
 import com.example.flashcardproject.Data.Folder.OfflineFolderRepository
+import com.example.flashcardproject.Data.User.OfflineUserRepository
 import com.example.flashcardproject.Navigation.FlashcardsAppNavGraph
 import com.example.flashcardproject.Presentation.Composables.NavBarScreen
 
@@ -60,13 +61,18 @@ fun FlashcardsApp(){
         OfflineFlashcardsRepository(app.database.flashcardDAO())
     }
 
+    val userRepository = remember {
+        OfflineUserRepository(app.database.userDAO())
+    }
+
     Column(modifier = Modifier.
     fillMaxSize()) {
         NavBarScreen()
         FlashcardsAppNavGraph(
             modifier = Modifier.weight(1f),
             folderRepository = folderRepository,
-            flashcardRepository = flashcardRepository)
+            flashcardRepository = flashcardRepository,
+            userRepository = userRepository)
     }
 }
 
