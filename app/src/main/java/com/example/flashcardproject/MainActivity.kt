@@ -12,15 +12,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.example.flashcardproject.ui.theme.FlashcardProjectTheme
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.flashcardproject.Data.AppDatabase
 import com.example.flashcardproject.Data.Flashcard.OfflineFlashcardsRepository
 import com.example.flashcardproject.Data.Folder.OfflineFolderRepository
 import com.example.flashcardproject.Data.User.OfflineUserRepository
 import com.example.flashcardproject.Navigation.FlashcardsAppNavGraph
+import com.example.flashcardproject.Presentation.Composables.NavBarContent
 import com.example.flashcardproject.Presentation.Composables.NavBarScreen
+import com.example.flashcardproject.Presentation.User.UserViewModel
+import com.example.flashcardproject.Presentation.User.UserViewModelFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -35,44 +42,70 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            FlashcardProjectTheme {
-                Scaffold { padding ->
-                    Box(modifier = Modifier.padding(padding)) {
-                        FlashcardsApp()
-                    }
-                }
+            val database = AppDatabase.getDatabase(applicationContext)
+            val userRepository = OfflineUserRepository(database.userDAO())
 
+            setContent {
+
+                val userViewModel: UserViewModel = viewModel(
+                    factory = UserViewModelFactory(userRepository)
+                )
+
+                LaunchedEffect(Unit) {
+                    userViewModel.ensureUserExists(1L)
+                }
+                FlashcardProjectTheme {
+                    Scaffold { padding ->
+                        Box(modifier = Modifier.padding(padding)) {
+                            FlashcardsApp()
+                        }
+                    }
+
+                }
             }
         }
-    }
-}
 
-// TOP-LVL APP COMPOSABLE
-@Composable
-fun FlashcardsApp(){
-    val context = LocalContext.current
-    val app = context.applicationContext as FlashcardApp
-
-    val folderRepository = remember {
-        OfflineFolderRepository(app.database.folderDAO())
     }
 
-    val flashcardRepository = remember {
-        OfflineFlashcardsRepository(app.database.flashcardDAO())
-    }
+    // TOP-LVL APP COMPOSABLE
+    @Composable
+    fun FlashcardsApp() {
+        val context = LocalContext.current
+        val app = context.applicationContext as FlashcardApp
 
-    val userRepository = remember {
-        OfflineUserRepository(app.database.userDAO())
-    }
+        val folderRepository = remember {
+            OfflineFolderRepository(app.database.folderDAO())
+        }
 
-    Column(modifier = Modifier.
-    fillMaxSize()) {
-        NavBarScreen()
-        FlashcardsAppNavGraph(
-            modifier = Modifier.weight(1f),
-            folderRepository = folderRepository,
-            flashcardRepository = flashcardRepository,
-            userRepository = userRepository)
+        val flashcardRepository = remember {
+            OfflineFlashcardsRepository(app.database.flashcardDAO())
+        }
+
+        val userRepository = remember {
+            OfflineUserRepository(app.database.userDAO())
+        }
+
+        val navController = rememberNavController()
+
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            NavBarContent(
+                onClick = { index ->
+                    when (index) {
+                        0 -> navController.navigate("folders")
+                        1 -> navController.navigate("user/1")
+                    }
+                }
+            )
+            FlashcardsAppNavGraph(
+                modifier = Modifier.weight(1f),
+                folderRepository = folderRepository,
+                flashcardRepository = flashcardRepository,
+                userRepository = userRepository,
+                navController = navController
+            )
+        }
     }
 }
 

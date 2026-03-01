@@ -18,8 +18,6 @@ fun UserInfoScreen(viewModel: UserViewModel, userId: Long) {
         .collectAsState("")
 
     Text(text = userPoints)
-
-
 }
 
 @Composable

@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -24,6 +26,10 @@ import com.example.flashcardproject.Presentation.Folder.FolderViewModelFactory
 import androidx.navigation.compose.NavHost
 import com.example.flashcardproject.Data.User.UserRepository
 import com.example.flashcardproject.Presentation.Composables.Flashcard.FlashcardPlayScreen
+import com.example.flashcardproject.Presentation.Composables.NavBarContent
+import com.example.flashcardproject.Presentation.Composables.User.UserInfoScreen
+import com.example.flashcardproject.Presentation.User.UserViewModel
+import kotlinx.coroutines.flow.first
 
 
 @Composable
@@ -31,9 +37,9 @@ fun FlashcardsAppNavGraph(
     modifier: Modifier = Modifier,
     folderRepository: FolderRepository,
     flashcardRepository: FlashcardRepository,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    navController: NavHostController
 ) {
-    val navController = rememberNavController()
 
     val folderViewModelFactory = remember {
         FolderViewModelFactory(folderRepository, flashcardRepository)
@@ -50,6 +56,10 @@ fun FlashcardsAppNavGraph(
     val flashcardViewModel: FlashcardViewModel = viewModel(
         factory = flashcardViewModelFactory
     )
+
+    val userViewModel = remember { UserViewModel(userRepository) }
+
+    val currentUserId = 1L
 
 
     NavHost(
@@ -158,8 +168,31 @@ fun FlashcardsAppNavGraph(
             FlashcardPlayScreen(
                 flashcards = flashcards,
                 viewModel = flashcardViewModel,
-                onFinished = {navController.navigate("enterFolder/$folderId")},
+                onFinished = {flashcardViewModel.onFolderCompleted(currentUserId)
+                    navController.navigate("enterFolder/$folderId")},
                 onCancel = {navController.navigate("enterFolder/$folderId")}
+            )
+        }
+
+        composable("user/{userId}",
+            arguments = listOf(
+                navArgument("userId"){type= NavType.LongType}
+            )
+        ){ backStackEntry ->
+            val userId = backStackEntry.arguments?.getLong("userId") ?: 0L
+            UserInfoScreen(userViewModel, userId )
+        }
+
+        composable("navBar"){
+            NavBarContent(
+                onClick = {index ->
+                    when(index){
+                        0 -> navController.navigate("folders")
+                        1 -> navController.navigate("user/$currentUserId")
+                        3 -> navController.navigate("")
+                        4 -> navController.navigate("")
+                    }
+                }
             )
         }
     }

@@ -7,7 +7,13 @@ interface UserRepository {
 
     val users: Flow<List<UserUi>>
 
+    suspend fun insertUser(user: UserUi)
+
     fun getUserPoints(userId: Long): Flow<Int>
 
-    suspend fun updatePoints(userId: Long, points: Int)
+    suspend fun updatePoints(userId: Long, points: Int): Int?
+
+    suspend fun getPointsOnce(userId: Long): Int
+
+    suspend fun userExists(userId: Long): Boolean
 }

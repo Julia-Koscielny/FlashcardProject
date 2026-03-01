@@ -1,5 +1,6 @@
 package com.example.flashcardproject.Data.User
 
+import com.example.flashcardproject.Mappers.User.toEnt
 import com.example.flashcardproject.Mappers.User.toUI
 import com.example.flashcardproject.Presentation.User.UserUi
 import kotlinx.coroutines.flow.Flow
@@ -12,8 +13,22 @@ class OfflineUserRepository(private val userDAO: UserDAO): UserRepository {
                 list.map{it.toUI()}
             }
 
+    override suspend fun insertUser(user: UserUi) {
+        userDAO.insertUser(user.toEnt())
+    }
+
     override fun getUserPoints(userId: Long): Flow<Int> =
         userDAO.getUserPoints(userId)
 
-    override suspend fun updatePoints(userId: Long, points: Int) = userDAO.updatePoints(userId,points)
+    override suspend fun updatePoints(userId: Long, points: Int): Int? {
+        return userDAO.updatePoints(userId, points)
+    }
+
+    override suspend fun getPointsOnce(userId: Long): Int {
+       return userDAO.getPointsOne(userId)
+    }
+
+    override suspend fun userExists(userId: Long): Boolean {
+        return userDAO.userExists(userId)
+    }
 }

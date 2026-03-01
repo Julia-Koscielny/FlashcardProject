@@ -1,5 +1,6 @@
 package com.example.flashcardproject.Presentation.Flashcard
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashcardproject.Data.Flashcard.FlashcardRepository
@@ -9,6 +10,7 @@ import com.example.flashcardproject.Presentation.Flashcard.FlashcardUiState
 import com.example.flashcardproject.Mappers.Flashcard.toEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class FlashcardViewModel(
@@ -67,10 +69,11 @@ class FlashcardViewModel(
         }
     }
 
-    fun onFolderCompleted (userId: Long){
+    fun onFolderCompleted(userId: Long, pointsToAdd: Int = 10) {
         viewModelScope.launch {
-            userRepository.updatePoints(userId,10)
-
+            userRepository.updatePoints(userId, pointsToAdd)
+            val currentPoints = userRepository.getPointsOnce(userId)
+            Log.d("USER_DEBUG", "User $userId now has $currentPoints points")
         }
     }
 
