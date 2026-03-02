@@ -25,11 +25,14 @@ import com.example.flashcardproject.Data.Resources.AppIcons
 import com.example.flashcardproject.Presentation.StoreObject.StoreObjectUi
 import java.util.Objects
 import androidx.compose.foundation.lazy.grid.items
+import com.example.flashcardproject.Presentation.User.UserViewModel
 
 @Composable
 fun ShopComposable(
     storeObjects: List<StoreObjectUi>,
-    onItemClick: (StoreObjectUi) -> Unit
+    onItemClick: (StoreObjectUi) -> Unit,
+    userId: Long,
+    userViewModel: UserViewModel
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 120.dp),
@@ -40,7 +43,9 @@ fun ShopComposable(
         items(storeObjects) { item ->
         ShopObject(
             item = item,
-            onClick = { onItemClick(item) }
+            onClick = {
+                userViewModel.purchaseItem(userId, item.price)
+                onItemClick(item) }
         )
     }
 
@@ -55,8 +60,8 @@ fun ShopObject(
 
     val iconList = listOf(
         com.example.flashcardproject.R.drawable.folder,
-        com.example.flashcardproject.R.drawable.user,
         com.example.flashcardproject.R.drawable.flower,
+        com.example.flashcardproject.R.drawable.empty,
         com.example.flashcardproject.R.drawable.store,
     )
     Card(
@@ -71,7 +76,7 @@ fun ShopObject(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally) {
 
-            Icon(painter = painterResource(id = iconList[2]),
+            Icon(painter = painterResource(id = iconList[1]),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp))
 

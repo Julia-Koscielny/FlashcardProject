@@ -1,10 +1,13 @@
 package com.example.flashcardproject.Navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -198,9 +201,21 @@ fun FlashcardsAppNavGraph(
 
         composable("Shop"){
             val state by shopViewModel.storeObjectUiState.collectAsState()
+            val userId = 1L
+
+            val context = LocalContext.current
+
+            LaunchedEffect(Unit) {
+                userViewModel.message.collect { msg ->
+                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                }
+            }
+
 
             ShopComposable(
                 storeObjects = state.storeObjects,
+                userViewModel = userViewModel,
+                userId = userId,
                 onItemClick = {navController.navigate("Garden")}
             )
         }

@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import com.example.flashcardproject.Mappers.User.toUI
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 
 class UserViewModel( private val userRepository: UserRepository): ViewModel() {
@@ -34,7 +36,6 @@ class UserViewModel( private val userRepository: UserRepository): ViewModel() {
             }
         }
 
-
     fun getUserPoints(userId: Long): Flow<String> {
         return userRepository
             .getUserPoints(userId)
@@ -45,4 +46,19 @@ class UserViewModel( private val userRepository: UserRepository): ViewModel() {
 
     }
 
+    private val _message = MutableSharedFlow<String>()
+    val message = _message.asSharedFlow()
+
+    fun purchaseItem(userId: Long, price: Int) {
+        viewModelScope.launch {
+
+            val currentPoints = userRepository.getPointsOnce(userId)
+
+            if (currentPoints >= price) {
+                userRepository.updatePoints(userId, -price)
+            } else {
+                _message.emit("You have no points. Play cards to get points.")
+            }
+        }
+    }
 }

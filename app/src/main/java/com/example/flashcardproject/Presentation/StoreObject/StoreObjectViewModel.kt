@@ -15,15 +15,22 @@ import kotlinx.coroutines.launch
 
 class StoreObjectViewModel(private val repository: StoreObjectRepository) : ViewModel() {
 
+    private val predefinedItems = listOf(
+        StoreObjectUi(id = 1L, name = "Plant 1", price = 20),
+        StoreObjectUi(id = 2L, name = "Plant 2", price = 40),
+        StoreObjectUi(id = 3L, name = "Plant 3", price = 60)
+    )
+
     val storeObjectUiState: StateFlow<StoreObjectUiState> =
         repository.storeObjects
-            .map { objects ->
-                StoreObjectUiState(storeObjects = objects)
+            .map { dbObjects ->
+                val allItems = predefinedItems + dbObjects
+                StoreObjectUiState(storeObjects = allItems)
             }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = StoreObjectUiState()
+                initialValue = StoreObjectUiState(storeObjects = predefinedItems)
             )
 
     fun insertStoreObject(storeObject: StoreObjectUi){
