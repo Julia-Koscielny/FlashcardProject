@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -37,10 +40,13 @@ fun FlashcardPlayScreen(
     val currentFlashcard = flashcards[currentIndex]
     val isLast = currentIndex == flashcards.lastIndex
 
-    Column {
+    Column(modifier = Modifier.fillMaxSize() .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
         SingularFlashcardScreen(
             viewModel = viewModel,
-            flashcard = currentFlashcard
+            flashcard = currentFlashcard,
+            modifier = Modifier.heightIn(min = 400.dp) .fillMaxWidth(0.9f) .padding(16.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -49,12 +55,15 @@ fun FlashcardPlayScreen(
             onClick = {
                 if (isLast) onFinished()
                 else currentIndex++
-            }
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text(if (isLast) "Finish" else "Next")
         }
 
-        Button(onClick = onCancel) {
+        Button(
+            onClick = onCancel,
+            modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text("Cancel")
         }
     }

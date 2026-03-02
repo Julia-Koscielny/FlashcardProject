@@ -58,12 +58,15 @@ fun FolderInsideScreen(
             onPlayClick = onPlayClick,
             modifier = Modifier
                 .padding(vertical = 16.dp)
+                .align(Alignment.CenterHorizontally)
         )
 
         Spacer(modifier = Modifier.width(6.dp))
 
         CreateButton(
-            onCreateClick = onCreateClick
+            onCreateClick = onCreateClick,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
         )
     }
 }

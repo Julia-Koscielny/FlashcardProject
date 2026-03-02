@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.flashcardproject.Presentation.Flashcard.FlashcardUi
@@ -18,7 +19,9 @@ import com.example.flashcardproject.Presentation.Flashcard.FlashcardViewModel
 @Composable
 fun SingularFlashcardScreen(
     viewModel: FlashcardViewModel,
-    flashcard: FlashcardUi) {
+    flashcard: FlashcardUi,
+    modifier: Modifier = Modifier
+) {
 
     /*val state by viewModel.flashCardsAppUiState.collectAsState()
     val flashcard = state.flashcards.first { it.id == flashcardId}*/

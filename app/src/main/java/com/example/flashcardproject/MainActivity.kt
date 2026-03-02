@@ -22,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.flashcardproject.Data.AppDatabase
 import com.example.flashcardproject.Data.Flashcard.OfflineFlashcardsRepository
 import com.example.flashcardproject.Data.Folder.OfflineFolderRepository
+import com.example.flashcardproject.Data.StoreObject.OfflineStoreObjectRepository
 import com.example.flashcardproject.Data.User.OfflineUserRepository
 import com.example.flashcardproject.Navigation.FlashcardsAppNavGraph
 import com.example.flashcardproject.Presentation.Composables.NavBarContent
@@ -85,6 +86,10 @@ class MainActivity : ComponentActivity() {
             OfflineUserRepository(app.database.userDAO())
         }
 
+        val storeObjectRepository = remember {
+            OfflineStoreObjectRepository(app.database.storeObjectDAO())
+        }
+
         val navController = rememberNavController()
 
         Column(
@@ -95,6 +100,7 @@ class MainActivity : ComponentActivity() {
                     when (index) {
                         0 -> navController.navigate("folders")
                         1 -> navController.navigate("user/1")
+                        3 -> navController.navigate("Shop")
                     }
                 }
             )
@@ -103,6 +109,7 @@ class MainActivity : ComponentActivity() {
                 folderRepository = folderRepository,
                 flashcardRepository = flashcardRepository,
                 userRepository = userRepository,
+                storeObjectRepository = storeObjectRepository,
                 navController = navController
             )
         }

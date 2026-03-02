@@ -24,10 +24,14 @@ import com.example.flashcardproject.Presentation.Flashcard.FlashcardViewModelFac
 import com.example.flashcardproject.Presentation.Folder.FolderViewModel
 import com.example.flashcardproject.Presentation.Folder.FolderViewModelFactory
 import androidx.navigation.compose.NavHost
+import com.example.flashcardproject.Data.StoreObject.StoreObjectRepository
 import com.example.flashcardproject.Data.User.UserRepository
 import com.example.flashcardproject.Presentation.Composables.Flashcard.FlashcardPlayScreen
 import com.example.flashcardproject.Presentation.Composables.NavBarContent
+import com.example.flashcardproject.Presentation.Composables.Shop.ShopComposable
 import com.example.flashcardproject.Presentation.Composables.User.UserInfoScreen
+import com.example.flashcardproject.Presentation.StoreObject.StoreObjectViewModel
+import com.example.flashcardproject.Presentation.StoreObject.StoreObjectViewModelFactory
 import com.example.flashcardproject.Presentation.User.UserViewModel
 import kotlinx.coroutines.flow.first
 
@@ -38,7 +42,8 @@ fun FlashcardsAppNavGraph(
     folderRepository: FolderRepository,
     flashcardRepository: FlashcardRepository,
     userRepository: UserRepository,
-    navController: NavHostController
+    navController: NavHostController,
+    storeObjectRepository: StoreObjectRepository
 ) {
 
     val folderViewModelFactory = remember {
@@ -60,6 +65,14 @@ fun FlashcardsAppNavGraph(
     val userViewModel = remember { UserViewModel(userRepository) }
 
     val currentUserId = 1L
+
+    val storeObjectViewModelFactory = remember {
+        StoreObjectViewModelFactory(storeObjectRepository)
+    }
+
+    val shopViewModel: StoreObjectViewModel = viewModel(
+        factory = storeObjectViewModelFactory
+    )
 
 
     NavHost(
@@ -183,14 +196,27 @@ fun FlashcardsAppNavGraph(
             UserInfoScreen(userViewModel, userId )
         }
 
+        composable("Shop"){
+            val state by shopViewModel.storeObjectUiState.collectAsState()
+
+            ShopComposable(
+                storeObjects = state.storeObjects,
+                onItemClick = {navController.navigate("Garden")}
+            )
+        }
+
+        composable("Garden"){
+
+        }
+
         composable("navBar"){
             NavBarContent(
                 onClick = {index ->
                     when(index){
                         0 -> navController.navigate("folders")
                         1 -> navController.navigate("user/$currentUserId")
-                        3 -> navController.navigate("")
-                        4 -> navController.navigate("")
+                        2 -> navController.navigate("")
+                        3 -> navController.navigate("Shop")
                     }
                 }
             )

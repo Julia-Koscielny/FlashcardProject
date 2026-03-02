@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -97,8 +98,9 @@ fun FolderMin(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(painter = painterResource(R.drawable.folder), "",
-            modifier = Modifier.
-        padding(10.dp))
+            modifier = Modifier
+                .padding(5.dp)
+                .size(40.dp))
         Text( text = folder.name,
             modifier = Modifier.padding(16.dp))
 
